@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <title>医疗系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <link href="../bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="../css/icons.css" rel="stylesheet" type="text/css">
+    <link href="../css/style.css" rel="stylesheet" type="text/css">
+    <link href="../layer/skin/default/layer.css" rel="stylesheet"/>
+
+</head>
+
+
+<body>
+
+<!-- Begin page -->
+<div class="accountbg"></div>
+<div class="wrapper-page">
+    <div class="panel">
+        <div class="panel-body">
+
+            <!--<h3 class="text-center mt-0 m-b-15">-->
+            <!--<a href="index.html" class="logo logo-admin"><img src="assets/images/logo.png" height="30" alt="logo"></a>-->
+            <!--</h3>-->
+
+            <h4 class="text-muted text-center font-18"><b>登录</b></h4>
+
+            <div class="p-3">
+                <form class="m-t-20" action="">
+                    <div class="row">
+                        <div class="col-xs-12" style="padding: 8px 40px">
+                            <input class="form-control" type="text" id="userName" placeholder="请输入帐号">
+                        </div>
+
+                        <div class="col-xs-12" style="padding: 8px 40px">
+                            <input class="form-control" type="password" id="password" placeholder="请输入密码">
+                        </div>
+
+                        <div class="col-xs-12 form-inline" style="padding: 8px 25px">
+                            <div class="col-xs-6">
+                                <input class="form-control" type="text" id="captcha" placeholder="请输入验证码" style="width: 100%">
+                            </div>
+                            <div class="col-xs-6" style="padding: 0px;">
+                                <div class="check-code" title="换一个？" style="cursor: pointer;float: left">
+                                    <img src="/login/captcha" style="height: 30px" onclick="updateCaptcha()">
+                                </div>
+                                <a onclick="updateCaptcha();" style="cursor: pointer;font-size: 14px;color: #707070;margin-left: 20px;line-height:40px;text-decoration: underline;">换一个？</a>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 form-inline" style="padding: 8px 25px">
+                            <div class="col-xs-6">
+                                #for(x:relationType)
+                                <label class="radio-inline" style="font-weight: normal">
+                                    <input type="radio" name="relationType" value="#(x.value)" #if(for.index==0 ) checked #end>&nbsp;#(x.text)&nbsp;
+                                </label>
+                                #end
+                            </div>
+                            <!--<div class="col-xs-6 text-right">-->
+                            <!--<a href="/register" class="text-muted"><i class="mdi mdi-account-circle"></i> 创建新用户</a>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="col-xs-12" style="padding: 8px 40px;margin-bottom: 10px">
+                            <div class="btn btn-info btn-block waves-effect waves-light" id="loginBtn">登录</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- jQuery  -->
+<script src="../js/jquery-2.2.3.min.js"></script>
+<script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="../js/common.js"></script>
+<script src="../layer/layer.js"></script>
+
+</body>
+</html>
+
+<script type="text/javascript">
+    var msg = "#(msg)";
+    $(function () {
+        if (hasText(msg)) {
+            showError(msg);
+        }
+
+        $("#loginBtn").on("click", function () {
+            var data = {
+                userName: $("#userName").val(),
+                password: $("#password").val(),
+                relationType: $("input[name='relationType']:checked").val(),
+                captcha: $("#captcha").val(),
+            };
+            doPostWithVali("/login/doLogin", data, function (json) {
+                window.location.href = "/index";
+            }, function (json) {
+                showPostFail(json.msg);
+                updateCaptcha();
+            }, function (json) {
+
+                if (hasText(json.captchaMsg)) {
+                    showTip(json.captchaMsg, "captcha");
+                    updateCaptcha();
+                }
+            });
+        });
+    });
+
+    function updateCaptcha() {
+        var $captcha = $("#captcha");
+        $(".check-code").find("img").attr("src", "/login/captcha?v=" + Math.random());
+        $captcha.val("").focus();
+    }
+</script>
